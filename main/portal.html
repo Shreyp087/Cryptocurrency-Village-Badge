@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <title>SHREY // TRAPDOOR</title>
+  <style>
+    :root{color-scheme:dark;--g:#62ff9b;--d:#07110b;--m:#17351f;--a:#ffb52e}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#16341f 0,#050806 55%);color:var(--g);font:15px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px}
+    main{max-width:760px;margin:auto;border:1px solid #398655;background:#050a07e8;box-shadow:0 0 32px #22ff6640}
+    header{padding:17px 20px;border-bottom:1px solid var(--m);display:flex;justify-content:space-between;gap:12px;align-items:center}
+    h1{font-size:18px;letter-spacing:.12em;margin:0}.live{color:var(--a);font-size:12px}
+    #screen{height:330px;overflow:auto;padding:18px 20px;white-space:pre-wrap;word-break:break-word}.line{margin:0 0 8px}.sys{color:#9aaf9f}.ok{color:var(--a)}
+    form{display:flex;border-top:1px solid var(--m)}label{padding:14px 0 14px 18px;color:var(--a)}input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:var(--g);font:inherit;padding:14px 10px}button{border:0;border-left:1px solid var(--m);background:#102b19;color:var(--g);font:inherit;padding:0 18px}
+    footer{padding:10px 20px;border-top:1px solid var(--m);font-size:11px;color:#78947f}.blink{animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:.25}}
+  </style>
+</head>
+<body>
+<!-- recovery-note: the removed index still answers at /sector7 -->
+<main>
+  <header><h1>SHREY // TRAPDOOR</h1><span class="live"><span class="blink">●</span> LOCAL NODE</span></header>
+  <section id="screen" aria-live="polite"><div class="line sys">Booting isolated recovery console...</div></section>
+  <form id="form"><label for="cmd">guest@badge:$</label><input id="cmd" autocomplete="off" autocapitalize="none" spellcheck="false" autofocus placeholder="type help"><button>RUN</button></form>
+  <footer><span id="mission">STAGE: RECON</span> · Offline badge challenge. No credentials are requested or stored.</footer>
+</main>
+<script>
+const out=document.querySelector('#screen'),form=document.querySelector('#form'),cmd=document.querySelector('#cmd');
+function line(text,cls=''){const d=document.createElement('div');d.className='line '+cls;d.textContent=text;out.appendChild(d);out.scrollTop=out.scrollHeight}
+async function run(value){line('> '+value);try{const r=await fetch('/api/cmd',{method:'POST',headers:{'Content-Type':'text/plain'},body:value});const j=await r.json();line(j.output,j.unlocked?'ok':'')}catch(e){line('NODE ERROR: connection lost','ok')}}
+form.addEventListener('submit',e=>{e.preventDefault();const v=cmd.value.trim();if(v){cmd.value='';run(v)}});
+let lastStage='';
+async function state(){try{const r=await fetch('/api/state',{cache:'no-store'}),j=await r.json();document.title=(j.unlocked?'UNLOCKED':'LOCKED')+' // SHREY';document.querySelector('#mission').textContent='STAGE: '+j.stage+(j.seconds?' · T-'+j.seconds:'');if(lastStage&&lastStage!==j.stage)line('MISSION UPDATE: '+j.stage,'ok');lastStage=j.stage;}catch(e){}}
+line('Operation KAAM recovery console online. Type help.','sys');state();setInterval(state,1000);
+</script>
+</body>
+</html>

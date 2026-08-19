@@ -1,0 +1,10 @@
+build/
+sdkconfig
+sdkconfig.old
+managed_components/
+dependencies.lock
+.venv/
+.toolchains/
+*.bin.backup
+__pycache__/
+*.pyc
